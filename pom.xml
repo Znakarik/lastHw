@@ -73,6 +73,11 @@
             <artifactId>allure-cucumber3-jvm</artifactId>
             <version>${allure.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ru.stqa.selenium</groupId>
+            <artifactId>webdriver-wrapper</artifactId>
+            <version>1.0.47</version>
+        </dependency>
     </dependencies>
 
     <build>

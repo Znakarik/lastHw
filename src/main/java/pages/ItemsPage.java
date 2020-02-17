@@ -13,7 +13,7 @@ public class ItemsPage extends BasePage {
         PageFactory.initElements(Base.getDriver(), this);
     }
 
-    @FindBy(xpath = "//input[@id='to_1942']")
+    @FindBy(xpath = "(//div[contains(@class,'ui-a0l0 ui-a0g5')]//input)[2]")
     public WebElement limitInput;
 
     @FindBy(xpath = "//input[@role='combobox']")
@@ -21,4 +21,7 @@ public class ItemsPage extends BasePage {
 
     @FindBy(xpath = "//span[contains(text(),'3 ГБ')]/../../div[@class='ui-at4']")
     public WebElement checkBox3GB;
+
+    @FindBy(xpath = "//a[@class='b5g9 suggestions-item type-suggests']")
+    WebElement firstItemFromSearchList;
 }

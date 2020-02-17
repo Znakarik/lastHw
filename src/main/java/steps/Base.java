@@ -4,6 +4,7 @@ import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.stqa.selenium.wrapper.HighlightingWrapper;
 import util.TestProperties;
 
 import java.util.Properties;
@@ -23,12 +24,12 @@ public class Base {
         switch (properties.getProperty("browser")) {
             case "chrome":
                 System.setProperty("web.driver.chrome.driver", properties.getProperty("web.driver.chrome.driver"));
-                driver = new ChromeDriver();
+                driver = new HighlightingWrapper(new ChromeDriver());
                 break;
         }
         baseUrl = properties.getProperty("app.url");
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(baseUrl);
     }
@@ -36,6 +37,6 @@ public class Base {
     @After
     public void tearDown() {
         driver.close();
-        driver.quit();
+//        driver.quit();
     }
 }
