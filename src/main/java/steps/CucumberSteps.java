@@ -31,14 +31,16 @@ public class CucumberSteps {
         System.out.println("Вы ограничили цену до " + limit);
     }
 
-    @Когда("Отметить чекбокс – \"(.+)\"$")
+    @Когда("Отметить чекбокс –  \"(.+)\" Гб$")
     public void chooseHighRate(String priority) {
         new ItemsPageSteps().voteHighPriority(priority);
+        System.out.println("Вы выбрали приоритет \"" + priority + "\"");
     }
 
-    @Когда("Отметить чекбокс – \"3Гб\"")
-    public void chooseGB() {
-        new ItemsPageSteps().vote3GBCheckbox();
+    @Когда("Отметить чекбокс –  \"(.+)\"$")
+    public void chooseGB(String amount) {
+        new ItemsPageSteps().vote3GBCheckbox(amount);
+        System.out.println("Вы выбрали обьем \"" + amount + "\"");
     }
 
     @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных товаров.")

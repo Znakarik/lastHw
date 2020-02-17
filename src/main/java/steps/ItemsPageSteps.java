@@ -2,6 +2,9 @@ package steps;
 
 import io.qameta.allure.Step;
 import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.BasePage;
@@ -20,7 +23,10 @@ public class ItemsPageSteps {
 
     @Step("Ограничиваем цену")
     public void limitPrice(String limit) throws InterruptedException {
-        new ItemsPage().getLimitInput().clear();
+
+        for (int i = 0; i < 7; i++) {
+            new ItemsPage().getLimitInput().sendKeys(Keys.BACK_SPACE);
+        }
         new ItemsPage().getLimitInput().sendKeys(limit);
     }
 
@@ -30,8 +36,9 @@ public class ItemsPageSteps {
     }
 
     @Step("Выбираем обьем в GB")
-    public void vote3GBCheckbox() {
-        new ItemsPage().getCheckBox3GB().click();
+    public void vote3GBCheckbox(String amount) {
+        WebElement box = Base.getDriver().findElement(By.xpath("(//div[@class='c3j1'])[2]"));
+        box.findElement(By.xpath("//span[contains(text(),'" + amount + "')]/../preceding-sibling::div")).click();
     }
 
 
