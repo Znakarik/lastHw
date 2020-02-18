@@ -1,7 +1,7 @@
 package steps;
 
 import cucumber.api.java.ru.Когда;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.NoSuchElementException;
 import pages.BasePage;
 import pages.ItemsPage;
 
@@ -31,7 +31,7 @@ public class CucumberSteps {
         System.out.println("Вы ограничили цену до " + limit);
     }
 
-    @Когда("Отметить чекбокс –  \"(.+)\" Гб$")
+    @Когда("Отметить чекбокс – \"(.+)\"$")
     public void chooseHighRate(String priority) {
         new ItemsPageSteps().voteHighPriority(priority);
         System.out.println("Вы выбрали приоритет \"" + priority + "\"");
@@ -39,8 +39,17 @@ public class CucumberSteps {
 
     @Когда("Отметить чекбокс –  \"(.+)\"$")
     public void chooseGB(String amount) {
-        new ItemsPageSteps().vote3GBCheckbox(amount);
-        System.out.println("Вы выбрали обьем \"" + amount + "\"");
+        try {
+        new ItemsPageSteps().voteCheckbox(amount);
+        } catch (NoSuchElementException e){
+            e.getStackTrace();
+        }
+        System.out.println("ВыR выбрали обьем \"" + amount + "\"");
+    }
+
+    public static void main(String[] args) {
+        String string = "3 Гб";
+        System.out.println(string.trim());
     }
 
     @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных товаров.")

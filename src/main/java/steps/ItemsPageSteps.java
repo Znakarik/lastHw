@@ -36,10 +36,7 @@ public class ItemsPageSteps {
     }
 
     @Step("Выбираем обьем в GB")
-    public void vote3GBCheckbox(String amount) {
-        WebElement box = Base.getDriver().findElement(By.xpath("(//div[@class='c3j1'])[2]"));
-        box.findElement(By.xpath("//span[contains(text(),'" + amount + "')]/../preceding-sibling::div")).click();
+    public void voteCheckbox(String amount) {
+        Base.getDriver().findElement(By.linkText(amount.trim())).click();
     }
-
-
 }
