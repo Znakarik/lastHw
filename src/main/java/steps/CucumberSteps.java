@@ -4,6 +4,7 @@ import cucumber.api.java.ru.Когда;
 import org.openqa.selenium.NoSuchElementException;
 import pages.BasePage;
 import pages.ItemsPage;
+import pages.Product;
 
 public class CucumberSteps {
     ItemsPage itemsPage;
@@ -13,16 +14,13 @@ public class CucumberSteps {
         itemsPage = new ItemsPage();
         new BasePage().goToMainPage();
         System.out.println("Вы на главной странице");
-        Thread.sleep(3000);
     }
 
     @Когда("Выполните поиск по \"(.+)\"$")
     public void search(String input) throws InterruptedException {
-        Thread.sleep(3000);
+        Thread.sleep(2000);
         new ItemsPageSteps().searchIphone(input);
-        Thread.sleep(3000);
         System.out.println("Вы выполнили поиск " + input);
-        Thread.sleep(3000);
     }
 
     @Когда("Ограничить цену до \"(.+)\"$")
@@ -39,46 +37,43 @@ public class CucumberSteps {
 
     @Когда("Отметить чекбокс –  \"(.+)\"$")
     public void chooseGB(String amount) {
-        try {
+//        try {
         new ItemsPageSteps().voteCheckbox(amount);
-        } catch (NoSuchElementException e){
-            e.getStackTrace();
-        }
-        System.out.println("ВыR выбрали обьем \"" + amount + "\"");
+//        } catch (NoSuchElementException e){
+//            e.getStackTrace();
+//        }
+        System.out.println("Вы выбрали обьем \"" + amount + "\"");
     }
 
-    public static void main(String[] args) {
-        String string = "3 Гб";
-        System.out.println(string.trim());
-    }
-
-    @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных товаров.")
+    @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных  товаров.")
     public void addEightItems() {
-
+        new ItemsPageSteps().addItemsToCard();
+        Product.productList.forEach(product -> System.out.println(product.getName()));
     }
 
-    @Когда("Запомнить название товаров")
-    public void rememberItemsNames() {
 
-    }
-
-    @Когда("Перейдите в корзину, убедитесь, что все добавленные ранее товары находятся в корзине")
-    public void goToBasket() {
-
-    }
-
-    @Когда("Проверить, что отображается текст \"(.+)\"$")
-    public void checkBasket() {
-
-    }
-
-    @Когда("Удалите все товары из корзины")
-    public void deleteAllItems() {
-
-    }
-
-    @Когда("Проверьте, что корзина не содержит никаких товаров")
-    public void isBasketEmpty() {
-
-    }
+//    @Когда("Запомнить название товаров")
+//    public void rememberItemsNames() {
+//
+//    }
+//
+//    @Когда("Перейдите в корзину, убедитесь, что все добавленные ранее товары находятся в корзине")
+//    public void goToBasket() {
+//
+//    }
+//
+//    @Когда("Проверить, что отображается текст \"(.+)\"$")
+//    public void checkBasket() {
+//
+//    }
+//
+//    @Когда("Удалите все товары из корзины")
+//    public void deleteAllItems() {
+//
+//    }
+//
+//    @Когда("Проверьте, что корзина не содержит никаких товаров")
+//    public void isBasketEmpty() {
+//
+//    }
 }

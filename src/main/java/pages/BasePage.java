@@ -1,16 +1,13 @@
 package pages;
 
 import lombok.Data;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static steps.Base.getDriver;
+import static steps.BaseCucu.getDriver;
 
 @Data
 public class BasePage {
@@ -31,9 +28,6 @@ public class BasePage {
     public WebElement cross;
 
     public void goToMainPage() {
-//        if(cross.isDisplayed()){
-//            cross.click();
-//    }
     }
 
     public static void click(WebElement element) {

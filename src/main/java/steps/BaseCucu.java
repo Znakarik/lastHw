@@ -10,7 +10,7 @@ import util.TestProperties;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-public class Base {
+public class BaseCucu {
     private static WebDriver driver;
     protected static String baseUrl;
     public static Properties properties = TestProperties.gitInstance().getProperties();
