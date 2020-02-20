@@ -19,13 +19,16 @@ public class BasePage {
     @FindBy(xpath = "//input[@name='search']")
     public WebElement searchInput;
 
-    @FindBy(xpath = "//button[@qa-id='header-search-go']")
+    @FindBy(xpath = "//button[@type='submit']")
     public WebElement searchButton;
 
     WebDriverWait wait = new WebDriverWait(getDriver(), 30);
 
     @FindBy(xpath = "//span[@class='exponea-close-cross']")
     public WebElement cross;
+
+    @FindBy(xpath = "//a[@data-widget='cart']")
+    public WebElement basket;
 
     public void goToMainPage() {
     }

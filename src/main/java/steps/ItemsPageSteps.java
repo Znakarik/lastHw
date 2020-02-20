@@ -16,23 +16,36 @@ import java.util.List;
 import static steps.BaseCucu.getDriver;
 
 public class ItemsPageSteps {
-//    final Wait<WebDriver> wait = new WebDriverWait(getDriver(), 10).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
+    public final Wait<WebDriver> wait = new WebDriverWait(getDriver(), 10).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
 
 
     @Step("Вводим к строке поиска \"iphone\"")
     public void searchIphone(String input) {
-        new BasePage().getSearchInput().sendKeys(input);
-        Assert.assertTrue(new BasePage().getSearchButton().isDisplayed());
-        new BasePage().getSearchButton().click();
+        try {
+            new BasePage().getSearchInput().sendKeys(input);
+            Assert.assertTrue(new BasePage().getSearchButton().isDisplayed());
+            new BasePage().getSearchButton().click();
+        } catch (StaleElementReferenceException e) {
+            new BasePage().getSearchInput().sendKeys(input);
+            Assert.assertTrue(new BasePage().getSearchButton().isDisplayed());
+            new BasePage().getSearchButton().click();
+        }
     }
 
     @Step("Ограничиваем цену")
     public void limitPrice(String limit) throws InterruptedException {
 
-        for (int i = 0; i < 5; i++) {
-            new ItemsPage().getLimitInput().sendKeys(Keys.BACK_SPACE);
+        try {
+            for (int i = 0; i < 5; i++) {
+                new ItemsPage().getLimitInput().sendKeys(Keys.BACK_SPACE);
+            }
+            new ItemsPage().getLimitInput().sendKeys(limit.replaceAll("1", ""));
+        } catch (StaleElementReferenceException e) {
+            for (int i = 0; i < 5; i++) {
+                new ItemsPage().getLimitInput().sendKeys(Keys.BACK_SPACE);
+            }
+            new ItemsPage().getLimitInput().sendKeys(limit.replaceAll("1", ""));
         }
-        new ItemsPage().getLimitInput().sendKeys(limit.replaceAll("1", ""));
     }
 
     @Step("Выбираем приоритет выдачи поиска")
@@ -49,21 +62,38 @@ public class ItemsPageSteps {
         WebElement checkBox = getDriver().findElement(By.xpath("//span[contains(text(), '" + amount + "')]"));
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", checkBox);
 //        wait.until(ExpectedConditions.visibilityOf(checkBox)).
-        checkBox.click();
+        try {
+            checkBox.click();
+        } catch (StaleElementReferenceException e) {
+            checkBox.click();
+        }
     }
 
     @Step("Добавляем в корзину первые 8 нечетных  товаров")
-    public void addItemsToCard() {
+    public void addItemsToCard() throws InterruptedException {
         for (int i = 0; i < 16; i++) {
             if (i % 2 != 0) {
-                WebElement title = getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]"));
-//                wait.until(ExpectedConditions.visibilityOf(title));
+                WebElement title = getDriver().findElement(By.xpath("(//a[contains(@class,'tile-hover-target')and contains(text(),'iPhone')])[" + i + "]"));
                 ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", title);
-                Product.createProd(title.getText());
-                WebElement buyButton = getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину ')]"));
+                Thread.sleep(3000);
+                getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину ')]")).click();
+                Product.createProd(getDriver().findElement(By.xpath("(//a[contains(@class,'tile-hover-target')and contains(text(),'iPhone')])[" + i + "]")).getAttribute("innerHTML"));
+                System.out.println("hello");
+//                wait.until(ExpectedConditions.visibilityOf(title));
 //                wait.until(ExpectedConditions.visibilityOf(buyButton)).click();
-                buyButton.click();
             }
         }
+    }
+
+    @Step("Запомнили названия в предидущем шаге")
+    public void rememberItemsNames() {
+        System.out.println("Запомнили названия товаров в предидущем шаге");
+    }
+
+    @Step("Нажимаем на кнопку корзины")
+    public void goToBasketPage() throws InterruptedException {
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", new BasePage().getBasket());
+        new BasePage().getBasket().click();
+        Thread.sleep(4000);
     }
 }

@@ -1,6 +1,9 @@
 package steps;
 
 import cucumber.api.java.ru.Когда;
+import cucumber.api.java.ru.Тогда;
+import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import pages.BasePage;
 import pages.ItemsPage;
@@ -18,7 +21,6 @@ public class CucumberSteps {
 
     @Когда("Выполните поиск по \"(.+)\"$")
     public void search(String input) throws InterruptedException {
-        Thread.sleep(2000);
         new ItemsPageSteps().searchIphone(input);
         System.out.println("Вы выполнили поиск " + input);
     }
@@ -46,34 +48,39 @@ public class CucumberSteps {
     }
 
     @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных  товаров.")
-    public void addEightItems() {
+    public void addEightItems() throws InterruptedException {
         new ItemsPageSteps().addItemsToCard();
         Product.productList.forEach(product -> System.out.println(product.getName()));
     }
 
+    @Когда("Запомнить название товаров")
+    public void rememberItemsNames() {
+        new ItemsPageSteps().rememberItemsNames();
+    }
 
-//    @Когда("Запомнить название товаров")
-//    public void rememberItemsNames() {
-//
-//    }
-//
-//    @Когда("Перейдите в корзину, убедитесь, что все добавленные ранее товары находятся в корзине")
-//    public void goToBasket() {
-//
-//    }
-//
-//    @Когда("Проверить, что отображается текст \"(.+)\"$")
-//    public void checkBasket() {
-//
-//    }
-//
-//    @Когда("Удалите все товары из корзины")
-//    public void deleteAllItems() {
-//
-//    }
-//
-//    @Когда("Проверьте, что корзина не содержит никаких товаров")
-//    public void isBasketEmpty() {
-//
-//    }
+    @Когда("Перейдите в корзину, убедитесь, что все добавленные ранее товары находятся в корзине")
+    public void goToBasket() throws InterruptedException {
+        new ItemsPageSteps().goToBasketPage();
+        new BasketPageSteps().checkIsBasketContainsItems();
+    }
+
+    @Когда("Проверить, что отображается текст \"(.+)\"$")
+    public void checkBasket(String text) {
+        try {
+            new BasketPageSteps().checkIsTextExist(text);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Когда("Удалите все товары из корзины")
+    public void deleteAllItems() throws InterruptedException {
+        new BasketPageSteps().deleteAll();
+        Thread.sleep(5000);
+    }
+
+    @Тогда("Проверьте, что корзина не содержит никаких товаров")
+    public void isBasketEmpty() throws InterruptedException {
+        new BasketPageSteps().checkBasketIsEmpty();
+    }
 }
