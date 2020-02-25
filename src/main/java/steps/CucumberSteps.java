@@ -2,21 +2,17 @@ package steps;
 
 import cucumber.api.java.ru.Когда;
 import cucumber.api.java.ru.Тогда;
-import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import pages.BasePage;
-import pages.ItemsPage;
 import pages.Product;
 
-public class CucumberSteps {
-    ItemsPage itemsPage;
+import java.io.IOException;
 
-    @Когда("Перейдите на сервис http://www.ozon.ru/")
-    public void goTo() throws InterruptedException {
-        itemsPage = new ItemsPage();
-        new BasePage().goToMainPage();
+public class CucumberSteps {
+
+    @Когда("Перейдите на сервис \"(.+)\"$")
+    public void goTo(String site) throws InterruptedException {
+        new ItemsPageSteps().goTo(site);
         System.out.println("Вы на главной странице");
+        System.out.println(ItemsPageSteps.class.getClassLoader());
     }
 
     @Когда("Выполните поиск по \"(.+)\"$")
@@ -31,6 +27,15 @@ public class CucumberSteps {
         System.out.println("Вы ограничили цену до " + limit);
     }
 
+    @Когда("Бренды : \"(.+)\", \"(.+)\"")
+    public void chooseBrands(String first, String second) throws InterruptedException {
+        if (BaseCucu.isSecond()) {
+            new ItemsPageSteps().chooseBrands(first,second);
+        }
+    }
+
+
+
     @Когда("Отметить чекбокс – \"(.+)\"$")
     public void chooseHighRate(String priority) {
         new ItemsPageSteps().voteHighPriority(priority);
@@ -39,18 +44,19 @@ public class CucumberSteps {
 
     @Когда("Отметить чекбокс –  \"(.+)\"$")
     public void chooseGB(String amount) {
-//        try {
         new ItemsPageSteps().voteCheckbox(amount);
-//        } catch (NoSuchElementException e){
-//            e.getStackTrace();
-//        }
         System.out.println("Вы выбрали обьем \"" + amount + "\"");
     }
 
-    @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных  товаров.")
-    public void addEightItems() throws InterruptedException {
+    @Когда("Из результатов поиска добавьте в корзину все четные товары")
+    public void add() throws InterruptedException {
+            addItems();
+    }
+
+    @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных  товаров")
+    public void addItems() throws InterruptedException {
         new ItemsPageSteps().addItemsToCard();
-        Product.productList.forEach(product -> System.out.println(product.getName()));
+        Product.productList.forEach(product -> System.out.println(product.getName() + " - " + product.getPrice()));
     }
 
     @Когда("Запомнить название товаров")
@@ -82,5 +88,10 @@ public class CucumberSteps {
     @Тогда("Проверьте, что корзина не содержит никаких товаров")
     public void isBasketEmpty() throws InterruptedException {
         new BasketPageSteps().checkBasketIsEmpty();
+    }
+
+    @Тогда("Приложить файл с информацией о всех добавленных товарах, указать товар с наибольшей ценой")
+    public void generateProductInfo() throws IOException {
+    new BasketPageSteps().generateInfo();
     }
 }

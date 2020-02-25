@@ -8,6 +8,6 @@ import org.junit.runner.RunWith;
         features = "./src/test/java/features/first.feature"
 )
 @RunWith(Cucumber.class)
-public class CucumberRunner {
+public class FirstCucumberRunner {
 
 }

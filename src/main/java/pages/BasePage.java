@@ -30,9 +30,6 @@ public class BasePage {
     @FindBy(xpath = "//a[@data-widget='cart']")
     public WebElement basket;
 
-    public void goToMainPage() {
-    }
-
     public static void click(WebElement element) {
         WebDriverWait wait = new WebDriverWait(getDriver(), 30);
 //        wait.until(ExpectedConditions.visibilityOf(element));

@@ -10,13 +10,15 @@ import java.util.Objects;
 public class Product {
     public static List<Product> productList = new ArrayList<>();
     String name;
+    int price;
 
-    public Product(String name) {
+    public Product(String name, String price) {
         this.name = name;
+        this.price = Integer.parseInt(price.replaceAll(" ",""));
     }
 
-    public static void createProd(String name){
-    productList.add(new Product(name));
+    public static void createProd(String name, String price){
+    productList.add(new Product(name, price));
     }
 
     @Override

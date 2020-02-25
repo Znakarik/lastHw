@@ -1,12 +1,18 @@
 package steps;
 
-import cucumber.api.java.mn.Харин;
+import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import pages.BasketPage;
 import pages.Product;
+import util.Parser;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Comparator;
 
 import static steps.BaseCucu.*;
 
@@ -46,6 +52,21 @@ public class BasketPageSteps {
     public  void checkBasketIsEmpty() throws InterruptedException {
         WebElement title = getDriver().findElement(By.xpath("//h1[contains(text(),'Корзина пуста')]"));
         Assert.assertTrue(title.isDisplayed());
+    }
+
+    @Step("Создаем файл с информацией о продуктах")
+    public void generateInfo() throws IOException {
+        new BasketPageSteps().createFile();
+    }
+
+//    @Attachment
+//    public static byte[] getFile(String pack){
+//
+//    }
+
+    public void createFile() throws IOException {
+        Parser parser = new Parser();
+        parser.serialise(Product.productList);
     }
 
 }
