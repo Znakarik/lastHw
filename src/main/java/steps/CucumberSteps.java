@@ -1,7 +1,9 @@
 package steps;
 
 import cucumber.api.java.ru.Когда;
+import cucumber.api.java.ru.То;
 import cucumber.api.java.ru.Тогда;
+import io.qameta.allure.Attachment;
 import pages.Product;
 
 import java.io.IOException;
@@ -30,10 +32,9 @@ public class CucumberSteps {
     @Когда("Бренды : \"(.+)\", \"(.+)\"")
     public void chooseBrands(String first, String second) throws InterruptedException {
         if (BaseCucu.isSecond()) {
-            new ItemsPageSteps().chooseBrands(first,second);
+            new ItemsPageSteps().chooseBrands(first, second);
         }
     }
-
 
 
     @Когда("Отметить чекбокс – \"(.+)\"$")
@@ -50,13 +51,13 @@ public class CucumberSteps {
 
     @Когда("Из результатов поиска добавьте в корзину все четные товары")
     public void add() throws InterruptedException {
-            addItems();
+        addItems();
     }
 
     @Когда("Из результатов поиска добавьте в корзину первые 8 нечетных  товаров")
     public void addItems() throws InterruptedException {
         new ItemsPageSteps().addItemsToCard();
-        Product.productList.forEach(product -> System.out.println(product.getName() + " - " + product.getPrice()));
+        Product.iPhoneList.forEach(product -> System.out.println(product.getName() + " - " + product.getPrice()));
     }
 
     @Когда("Запомнить название товаров")
@@ -92,6 +93,6 @@ public class CucumberSteps {
 
     @Тогда("Приложить файл с информацией о всех добавленных товарах, указать товар с наибольшей ценой")
     public void generateProductInfo() throws IOException {
-    new BasketPageSteps().generateInfo();
+        new BasketPageSteps().generateInfo();
     }
 }

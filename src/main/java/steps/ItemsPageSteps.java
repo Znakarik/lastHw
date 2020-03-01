@@ -3,6 +3,7 @@ package steps;
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.BasePage;
@@ -13,12 +14,12 @@ import static steps.BaseCucu.getDriver;
 
 public class ItemsPageSteps {
 
-    @Step("Переходим по адресу \"(.+)\"$")
+    @Step("Переходим по адресу \"{0}\"")
     public void goTo(String address) {
         getDriver().get(address);
     }
 
-    @Step("Вводим к строке поиска \"(.+)\"$")
+    @Step("Вводим к строке поиска \"{0}\"")
     public void searchIphone(String input) {
         try {
             new BasePage().getSearchInput().sendKeys(input);
@@ -31,7 +32,7 @@ public class ItemsPageSteps {
         }
     }
 
-    @Step("Ограничиваем цену \"(.+)\"$")
+    @Step("Ограничиваем цену \"{0}\"")
     public void limitPrice(String limit) {
         if (BaseCucu.isFirst()) {
             for (int i = 0; i < 5; i++) {
@@ -41,7 +42,11 @@ public class ItemsPageSteps {
         }
         if (BaseCucu.isSecond()) {
             ItemsPage itemsPage = new ItemsPage();
-            itemsPage.getLimitInput().sendKeys(limit);
+            try {
+                itemsPage.getLimitInput().sendKeys(limit);
+            } catch (StaleElementReferenceException e) {
+                itemsPage.getLimitInput().sendKeys(limit);
+            }
         }
     }
 
@@ -50,14 +55,12 @@ public class ItemsPageSteps {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", getDriver().findElement(By.xpath("//span[contains(text(), '" + priority + "')]")));
         try {
             getDriver().findElement(By.xpath("//span[contains(text(), '" + priority.trim() + "')]")).click();
-        } catch (StaleElementReferenceException e) {
+        } catch (WebDriverException e) {
+            getDriver().findElement(By.xpath("//button[@aria-label='Закрыть сообщение']")).click();
             try {
-                getDriver().findElement(By.xpath("//div[@class='a1']//button")).click();
-                getDriver().findElement(By.xpath("//span[contains(text(), '" + priority + "')]/../../..//input/..")).click();
+                getDriver().findElement(By.xpath("//span[contains(text(), '" + priority + "')]")).click();
             } catch (WebDriverException e1) {
-
-                getDriver().findElement(By.xpath("//div[@class='a1']//button")).click();
-                getDriver().findElement(By.xpath("//span[contains(text(), '" + priority + "')]/../../..//input/..")).click();
+                getDriver().findElement(By.xpath("//span[contains(text(), '" + priority + "')]")).click();
             }
         }
     }
@@ -73,16 +76,20 @@ public class ItemsPageSteps {
         }
     }
 
-    @Step("Бренды : \"(.+)\", \"(.+)\"")
+    @Step("Бренды : \"{0}\", \"{1}\"")
     public void chooseBrands(String first, String second) throws InterruptedException {
         ItemsPage itemsPage = new ItemsPage();
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", itemsPage.getShowAllButton());
         itemsPage.getShowAllButton().click();
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", itemsPage.getBrandInput());
         try {
-            Thread.sleep(4000);
+            ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", itemsPage.getBrandInput());
+        } catch (NoSuchElementException e) {
+            itemsPage.getShowAllButton().click();
+            ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", itemsPage.getBrandInput());
+        }
+        try {
             itemsPage.getBrandInput().sendKeys(first);
-        } catch (WebDriverException | InterruptedException e) {
+        } catch (WebDriverException e) {
             itemsPage.getBrandInput().sendKeys(first);
         }
         itemsPage.getBeats().click();
@@ -90,7 +97,6 @@ public class ItemsPageSteps {
         try {
             ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", itemsPage.getBrandInput());
             ((JavascriptExecutor) getDriver()).executeScript("arguments[0].value=\"" + second + "\"", new ItemsPage().getBrandInput());
-            Thread.sleep(5000);
             new ItemsPage().getSamsung().click();
         } catch (NoSuchElementException e) {
             ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", getDriver().findElement(By.xpath("(//div[contains(text(),'Бренды')]/following-sibling::div//input)[1]")));
@@ -106,17 +112,30 @@ public class ItemsPageSteps {
 
     @Step("Добавляем в корзину первые 8 нечетных  товаров")
     public void addItemsToCard() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(getDriver(), 10);
         if (BaseCucu.isFirst()) {
             for (int i = 0; i < 16; i++) {
                 if (i % 2 != 0) {
                     WebElement title = getDriver().findElement(By.xpath("(//a[contains(@class,'tile-hover-target')and contains(text(),'iPhone')])[" + i + "]"));
-                    ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", title);
-                    Thread.sleep(3000);
-                    getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину ')]")).click();
+                    try {
+                        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", title);
+                    } catch (StaleElementReferenceException e) {
+                        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", title);
+                    }
+                    try {
+                        wait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("((//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']/../../..//button)[2]"))));
+                    } catch (StaleElementReferenceException e) {
+                        wait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("((//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']/../../..//button)[2]"))));
+                    }
                     try {
                         Product.createProd(getDriver().findElement(By.xpath("(//a[contains(@class,'tile-hover-target')and contains(text(),'iPhone')])[" + i + "]")).getAttribute("innerHTML"), getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']")).getText().replaceAll("\\D", ""));
                     } catch (StaleElementReferenceException e) {
                         Product.createProd(getDriver().findElement(By.xpath("(//a[contains(@class,'tile-hover-target')and contains(text(),'iPhone')])[" + i + "]")).getAttribute("innerHTML"), getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']")).getText().replaceAll("\\D", ""));
+                    }
+                    try {
+                        getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину ')]")).click();
+                    } catch (WebDriverException e) {
+                        getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину ')]")).click();
                     }
                 }
             }
@@ -124,7 +143,17 @@ public class ItemsPageSteps {
         if (BaseCucu.isSecond()) {
             for (int i = 1; i < new ItemsPage().getBrandsTitles().size(); i++) {
                 if (i % 2 == 0) {
-                    Thread.sleep(3000);
+//                    try {
+//                        getDriver().findElement(By.xpath("((//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price'])/../../..//div[contains(text(),'Похожие')]"));
+//                    } catch (NoSuchElementException e) {
+//                        continue;
+//                    }
+                    try {
+                        Assert.assertTrue(getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину')]")).isDisplayed());
+                        getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину')]")).click();
+                    } catch (WebDriverException e1) {
+                        getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину')]")).click();
+                    }
                     try {
                         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]")));
                         Product.createProd(getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]")).getAttribute("innerHTML"), getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']")).getText().replaceAll("\\D", ""));
@@ -132,11 +161,15 @@ public class ItemsPageSteps {
                         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]")));
                         Product.createProd(getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]")).getAttribute("innerHTML"), getDriver().findElement(By.xpath("(//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']")).getText().replaceAll("\\D", ""));
                     }
-                    Thread.sleep(3000);
-                    getDriver().findElement(By.xpath("(//div[@data-widget='searchResultsV2']//a[@data-test-id='tile-name'])[" + i + "]/../../..//div[contains(text(),'В корзину')]")).click();
+                    try {
+                        wait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("((//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']/../../..//button)[2]"))));
+                    } catch (StaleElementReferenceException e) {
+                        wait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("((//a[@data-test-id='tile-name'])[" + i + "]/../../..//span[@data-test-id='tile-price']/../../..//button)[2]"))));
+                    }
                 }
             }
         }
+
     }
 
     @Step("Запомнили названия в предидущем шаге")
@@ -149,10 +182,8 @@ public class ItemsPageSteps {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", new BasePage().getBasket());
         try {
             new BasePage().getBasket().click();
-            Thread.sleep(4000);
         } catch (WebDriverException e) {
-            new BasePage().getBasket().click();
-            Thread.sleep(4000);
+            getDriver().get("https://www.ozon.ru/cart");
         }
     }
 }

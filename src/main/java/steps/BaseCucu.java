@@ -51,7 +51,6 @@ public class BaseCucu {
         switch (properties.getProperty("browser")) {
             case "chrome":
                 System.setProperty("web.driver.chrome.driver", properties.getProperty("web.driver.chrome.driver"));
-//                driver = new HighlightingWrapper(new ChromeDriver());
                 driver = new HighlightingWrapper(new ChromeDriver());
                 break;
         }
